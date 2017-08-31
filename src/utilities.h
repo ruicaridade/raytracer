@@ -13,3 +13,5 @@ struct Color
 };
 
 void colors_to_png(const std::string& filename, const std::vector<std::vector<Color>>& data);
+
+float elapsed_seconds();

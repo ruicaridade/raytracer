@@ -33,10 +33,11 @@ float dot(const Vector3& a, const Vector3& b)
         a.z * b.z;
 }
 
-void normalize(Vector3& vector)
+Vector3& normalize(Vector3& vector)
 {
     float l = length(vector);
     vector.x /= l;
     vector.y /= l;
     vector.z /= l;
+    return vector;
 }

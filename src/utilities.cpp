@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <iostream>
+#include <chrono>
 #include "external\TinyPngOut.h"
 
 Color::Color(int r, int g, int b, int a)
@@ -55,4 +56,13 @@ void colors_to_png(const std::string& filename, const std::vector<std::vector<Co
     }
 
     fclose(file);
+}
+
+float elapsed_seconds()
+{
+    static auto previous = std::chrono::high_resolution_clock::now();
+    auto now = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<float> elapsed = now - previous;
+    previous = now;
+    return elapsed.count();
 }

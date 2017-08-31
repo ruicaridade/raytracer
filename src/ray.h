@@ -8,3 +8,5 @@ struct Ray
     Vector3 origin;
     Vector3 direction;
 };
+
+Vector3 ray_get_point(const Ray& ray, float t);
