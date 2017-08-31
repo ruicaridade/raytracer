@@ -15,7 +15,8 @@ int main()
 	std::vector<std::vector<Color>> output;
 	std::vector<Sphere> spheres
 	{
-		Sphere(Vector3(0, 0, -1), 0.5f)
+		Sphere(Vector3(0.5f, 0, -1.5), 0.65f),
+		Sphere(Vector3(-0.5f, 0, -1), 0.65f)
 	};
 	
 	printf("Resolution: %i, %i\n", IMAGE_WIDTH, IMAGE_HEIGHT);
@@ -38,20 +39,26 @@ int main()
 			float yy = (float)y / IMAGE_HEIGHT;
 
 			Ray ray(origin, zero + horizontal * xx + vertical * yy);
+			Intersection intersection;
 			for (size_t i = 0; i < spheres.size(); i++)
 			{
-				auto intersection = intersects(spheres[i], ray);
-				if (intersection == nullptr)
-				{
-					row.push_back(Color(0, 0, 0));
-					continue;
-				}
+				Intersection temp = intersects(spheres[i], ray);
+				
+				if (temp.distance < intersection.distance)
+					intersection = temp;
+			}
 
-				Vector3 n = intersection->normal;
+			if (intersection.hit)
+			{
+				Vector3 n = intersection.normal;
 				row.push_back(Color(0.5f * ((n.x + 1) * 255), 
 					0.5f * ((n.y + 1) * 255), 
 					0.5f * ((n.z + 1) * 255), 
 					255));
+			}
+			else
+			{
+				row.push_back(Color(0, 0, 0));
 			}
 
 #if SHOW_PROGRESS

@@ -1,5 +1,4 @@
 #pragma once
-#include <memory>
 #include "math.h"
 #include "ray.h"
 
@@ -12,6 +11,10 @@ enum ObjectType
 
 struct Intersection
 {
+    Intersection();
+
+    bool hit;
+    float distance;
     Vector3 point;
     Vector3 normal;
     ObjectType::ObjectType type;
@@ -26,4 +29,4 @@ struct Sphere
     float radius2;
 };
 
-std::unique_ptr<Intersection> intersects(const Sphere& sphere, const Ray& ray);
+Intersection intersects(const Sphere& sphere, const Ray& ray);
