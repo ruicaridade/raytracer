@@ -3,7 +3,7 @@
 #include "geometry.h"
 #include "camera.h"
 
-#define IMAGE_SCALE 		1
+#define IMAGE_SCALE 		4
 #define IMAGE_WIDTH 		int(200 * IMAGE_SCALE)
 #define IMAGE_HEIGHT 		int(100 * IMAGE_SCALE)
 
