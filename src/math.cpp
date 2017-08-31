@@ -4,6 +4,9 @@
 Vector3::Vector3(float x, float y, float z)
     : x(x), y(y), z(z) { }
 
+Ray::Ray(const Vector3& origin, const Vector3& direction)
+    : origin(origin), direction(direction) { }
+
 Vector3 operator+(const Vector3& v1, const Vector3& v2)
 {
     return Vector3(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z);
@@ -40,4 +43,9 @@ Vector3& normalize(Vector3& vector)
     vector.y /= l;
     vector.z /= l;
     return vector;
+}
+
+Vector3 ray_get_point(const Ray& ray, float t)
+{
+    return ray.origin + ray.direction * t;
 }

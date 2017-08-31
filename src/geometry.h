@@ -1,13 +1,14 @@
 #pragma once
 #include "math.h"
-#include "ray.h"
 
-namespace ObjectType { 
-enum ObjectType
-{
-    Sphere,
-    Plane
-};}
+namespace ObjectType 
+{ 
+    enum ObjectType
+    {
+        Sphere,
+        Plane
+    };
+}
 
 struct Intersection
 {

@@ -1,6 +1,7 @@
 #include <iostream>
 #include "utilities.h"
 #include "geometry.h"
+#include "camera.h"
 
 #define IMAGE_SCALE 		1
 #define IMAGE_WIDTH 		int(200 * IMAGE_SCALE)
@@ -21,14 +22,8 @@ int main()
 	
 	printf("Resolution: %i, %i\n", IMAGE_WIDTH, IMAGE_HEIGHT);
 	printf("Drawing scene...\n");
-	// Bottom left corner of the lens
-	Vector3 zero(-2, -1, -1);
-
-	// Lens size
-	Vector3 horizontal(4, 0, 0);
-	Vector3 vertical(0, 2, 0);
-
-	Vector3 origin(0, 0, 0);
+	
+	Camera camera;
 	elapsed_seconds();
 	for (int y = IMAGE_HEIGHT - 1; y >= 0; y--)
 	{
@@ -38,11 +33,10 @@ int main()
 			float xx = (float)x / IMAGE_WIDTH;
 			float yy = (float)y / IMAGE_HEIGHT;
 
-			Ray ray(origin, zero + horizontal * xx + vertical * yy);
 			Intersection intersection;
 			for (size_t i = 0; i < spheres.size(); i++)
 			{
-				Intersection temp = intersects(spheres[i], ray);
+				Intersection temp = intersects(spheres[i], camera_cast_ray(camera, xx, yy));
 				
 				if (temp.distance < intersection.distance)
 				{
@@ -62,26 +56,6 @@ int main()
 			{
 				row.push_back(Color(0, 0, 0));
 			}
-
-#if SHOW_PROGRESS
-			static int progress = 0;
-			static int interval = 0;
-			progress++;
-			interval++;
-
-			if (interval >= PROGRESS_INTERVAL && progress < IMAGE_WIDTH * IMAGE_HEIGHT)
-			{
-				interval = 0;
-				std::cout << "\r";
-				std::cout << "Progress: " << float(progress) / (IMAGE_WIDTH * IMAGE_HEIGHT) * 100 << "%";
-			}
-			else if (progress >= IMAGE_WIDTH * IMAGE_HEIGHT)
-			{
-				std::cout << "\r";
-				std::cout << "Progress: " << "100%       ";
-				std::cout << std::endl;
-			}
-#endif
 		}
 
 		output.push_back(row);
