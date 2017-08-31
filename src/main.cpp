@@ -1,5 +1,4 @@
 #include <iostream>
-#include <future>
 #include "utilities.h"
 #include "geometry.h"
 
@@ -16,7 +15,8 @@ int main()
 	std::vector<Sphere> spheres
 	{
 		Sphere(Vector3(0.5f, 0, -1.5), 0.65f),
-		Sphere(Vector3(-0.5f, 0, -1), 0.65f)
+		Sphere(Vector3(-0.5f, 0, -1), 0.65f),
+		Sphere(Vector3(0, -100.5f, -1), 100)
 	};
 	
 	printf("Resolution: %i, %i\n", IMAGE_WIDTH, IMAGE_HEIGHT);
@@ -45,7 +45,9 @@ int main()
 				Intersection temp = intersects(spheres[i], ray);
 				
 				if (temp.distance < intersection.distance)
+				{
 					intersection = temp;
+				}
 			}
 
 			if (intersection.hit)

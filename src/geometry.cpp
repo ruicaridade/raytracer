@@ -6,7 +6,7 @@ Sphere::Sphere(const Vector3& center, float radius)
     : center(center), radius(radius), radius2(radius * radius) { }
 
 Intersection::Intersection()
-    : distance(std::numeric_limits<float>::max()) { }
+    : distance(std::numeric_limits<float>::max()), hit(false) { }
 
 Intersection intersects(const Sphere& sphere, const Ray& ray)
 {
@@ -20,17 +20,25 @@ Intersection intersects(const Sphere& sphere, const Ray& ray)
 
     if (descriminant > 0)
     {
-        float t = (-b - sqrt(descriminant)) / a;
+        float t0 = (-b - sqrt(descriminant)) / a;
+        float t1 = (-b + sqrt(descriminant)) / a;
 
-        intersection.distance = t;
-        intersection.type = ObjectType::Sphere;
-        intersection.point = ray_get_point(ray, t);
+        if (t0 > t1)
+            t0 = t1;
 
-        Vector3 dir = intersection.point - sphere.center;
-        normalize(dir);
-        intersection.normal = dir;
-
-        intersection.hit = true;
+        if (t0 > 0)
+        {
+            intersection.distance = t0;
+            intersection.type = ObjectType::Sphere;
+            intersection.point = ray_get_point(ray, t0);
+    
+            Vector3 dir = intersection.point - sphere.center;
+            normalize(dir);
+            intersection.normal = dir;
+    
+            intersection.hit = true;
+            return intersection;
+        }
     }
 
     return intersection;
