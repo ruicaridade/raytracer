@@ -4,26 +4,19 @@
 Vector3::Vector3(float x, float y, float z)
     : x(x), y(y), z(z) { }
 
-Vector3 Vector3::operator+(const Vector3& vector)
+Vector3 operator+(const Vector3& v1, const Vector3& v2)
 {
-    return Vector3(vector.x + x, vector.y + y, vector.z + z);
+    return Vector3(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z);
 }
 
-Vector3 Vector3::operator-(const Vector3& vector)
+Vector3 operator-(const Vector3& v1, const Vector3& v2)
 {
-    return Vector3(vector.x - x, vector.y - y, vector.z - z);
+    return Vector3(v1.x + v2.x, v1.y - v2.y, v1.z - v2.z);
 }
 
-Vector3 Vector3::operator*(float scalar)
+Vector3 operator*(const Vector3& vector, float scalar)
 {
-    return Vector3(x * scalar, y * scalar, z * scalar);
-}
-
-void Vector3::operator*=(float scalar)
-{
-    x *= scalar;
-    y *= scalar;
-    z *= scalar;
+    return Vector3(vector.x * scalar, vector.y * scalar, vector.z * scalar);
 }
 
 float length(const Vector3& vector)
