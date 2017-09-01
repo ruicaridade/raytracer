@@ -4,13 +4,16 @@
 
 struct Color
 {
-    Color(int r = 0, int g = 0, int b = 0, int a = 0);
+    Color(unsigned char r = 0, unsigned char g = 0, unsigned char b = 0, unsigned char a = 0);
     
-    int r;
-    int g;
-    int b;
-    int a;
+    unsigned char r;
+    unsigned char g;
+    unsigned char b;
+    unsigned char a;
 };
+
+Color operator*(const Color& color, float scalar);
+Color operator*(float scalar, const Color& color);
 
 void colors_to_png(const std::string& filename, const std::vector<std::vector<Color>>& data);
 

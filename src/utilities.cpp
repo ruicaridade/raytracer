@@ -5,9 +5,25 @@
 #include <chrono>
 #include "external\TinyPngOut.h"
 
-Color::Color(int r, int g, int b, int a)
+Color::Color(unsigned char r, unsigned char g, unsigned char b, unsigned char a)
     : r(r), g(g), b(b), a(a) { }
         
+Color operator*(const Color& color, float scalar)
+{
+    return Color((unsigned char)(color.r * scalar),
+        (unsigned char)(color.g * scalar),
+        (unsigned char)(color.b * scalar),
+        (unsigned char)(color.a * scalar));
+}
+
+Color operator*(float scalar, const Color& color)
+{
+    return Color((unsigned char)(color.r * scalar),
+        (unsigned char)(color.g * scalar),
+        (unsigned char)(color.b * scalar),
+        (unsigned char)(color.a * scalar));
+}
+
 void colors_to_png(const std::string& filename, const std::vector<std::vector<Color>>& data)
 {
     if (data.size() == 0)

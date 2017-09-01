@@ -1,4 +1,5 @@
 #include <iostream>
+#include <random>
 #include "utilities.h"
 #include "geometry.h"
 #include "camera.h"
@@ -7,8 +8,52 @@
 #define IMAGE_WIDTH 		int(200 * IMAGE_SCALE)
 #define IMAGE_HEIGHT 		int(100 * IMAGE_SCALE)
 
+#define TRACE_MAX_DEPTH		3
+
 #define SHOW_PROGRESS 		0
 #define PROGRESS_INTERVAL	(IMAGE_WIDTH * IMAGE_HEIGHT * 0.05f)
+
+Vector3 random_in_unit_sphere()
+{
+	static std::random_device device;
+	static std::mt19937 generator(device());
+	static std::uniform_real_distribution<float> dist(-1, 1);
+
+	Vector3 p = Vector3(dist(generator), dist(generator), dist(generator)) * 2.0f - Vector3(1, 1, 1);
+	while(dot(p, p) >= 1.0f) 
+	{
+		p = Vector3(dist(generator), dist(generator), dist(generator)) * 2.0f - Vector3(1, 1, 1);
+	}
+
+	return p;
+}
+
+Color trace(const std::vector<Sphere>& spheres, const Ray& ray, int depth)
+{
+	Intersection intersection;
+	for (size_t i = 0; i < spheres.size(); i++)
+	{
+		Intersection temp = intersects(spheres[i], ray);
+		
+		if (temp.distance < intersection.distance)
+		{
+			intersection = temp;
+		}
+	}
+
+	if (intersection.hit)
+	{
+		Vector3 target = intersection.point + intersection.normal + random_in_unit_sphere();
+		Vector3 direction = target - intersection.point;
+		normalize(direction);
+		return 0.5f * trace(spheres, Ray(intersection.point, direction), depth+1);
+	}
+	else
+	{
+		float t = 0.5f * (ray.direction.y + 1);
+		return Color((1 - t) * 255 + t * 128, (1 - t) * 255 + t * 179, (1 - t) * 255 + t * 255, 255);
+	}
+}
 
 int main()
 {
@@ -33,29 +78,7 @@ int main()
 			float xx = (float)x / IMAGE_WIDTH;
 			float yy = (float)y / IMAGE_HEIGHT;
 
-			Intersection intersection;
-			for (size_t i = 0; i < spheres.size(); i++)
-			{
-				Intersection temp = intersects(spheres[i], camera_cast_ray(camera, xx, yy));
-				
-				if (temp.distance < intersection.distance)
-				{
-					intersection = temp;
-				}
-			}
-
-			if (intersection.hit)
-			{
-				Vector3 n = intersection.normal;
-				row.push_back(Color(0.5f * ((n.x + 1) * 255), 
-					0.5f * ((n.y + 1) * 255), 
-					0.5f * ((n.z + 1) * 255), 
-					255));
-			}
-			else
-			{
-				row.push_back(Color(0, 0, 0));
-			}
+			row.push_back(trace(spheres, camera_cast_ray(camera, xx, yy), 0));
 		}
 
 		output.push_back(row);
