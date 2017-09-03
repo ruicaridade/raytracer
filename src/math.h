@@ -12,6 +12,7 @@ struct Vector3
 Vector3 operator+(const Vector3& v1, const Vector3& v2);
 Vector3 operator-(const Vector3& v1, const Vector3& v2);
 Vector3 operator*(const Vector3& vector, float scalar);
+Vector3 operator/(const Vector3& vector, float scalar);
 
 float length(const Vector3& vector);
 float dot(const Vector3& a, const Vector3& b);

@@ -1,5 +1,6 @@
 #include "raytracer.h"
 #include <cmath>
+#include "utilities\random.h"
 
 Raytracer::Raytracer(int width, int height, int depth, float gamma)
     : width(width), height(height), maxDepth(depth), gamma(gamma) {}
@@ -12,7 +13,7 @@ static Color linearToGamma(const Color &color, float value)
     return Color::fromVector(result);
 }
 
-void Raytracer::render(const Scene &scene, const Camera &camera)
+void Raytracer::render(const Scene &scene, const Camera &camera, bool antialiasing, int passes)
 {
     output.clear();
     for (int y = height - 1; y >= 0; y--)
@@ -20,10 +21,26 @@ void Raytracer::render(const Scene &scene, const Camera &camera)
         std::vector<Color> row;
         for (int x = 0; x < width; x++)
         {
-            float xx = (float)x / width;
-            float yy = (float)y / height;
-
-            row.push_back(linearToGamma(trace(scene, camera.cast(xx, yy), 0), gamma));
+            if (antialiasing)
+            {
+                Vector3 color;
+                for (size_t i = 0; i < passes; i++)
+                {
+                    float xx = float(x + Random::random()) / float(width);
+                    float yy = float(y + Random::random()) / float(height);
+                    color = color + trace(scene, camera.cast(xx, yy), 0).vector(); 
+                }
+                
+                color = color / passes;
+                row.push_back(linearToGamma(Color::fromVector(color), gamma));
+            }
+            else
+            {
+                float xx = (float)x / width;
+                float yy = (float)y / height;
+    
+                row.push_back(linearToGamma(trace(scene, camera.cast(xx, yy), 0), gamma));
+            }
         }
 
         output.push_back(row);

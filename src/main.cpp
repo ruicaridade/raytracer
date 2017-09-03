@@ -3,10 +3,12 @@
 #include "raytracer.h"
 #include "geometry\sphere.h"
 #include "materials\diffuse.h"
+#include "materials\metal.h"
 
 #define IMAGE_SCALE 		4
 #define IMAGE_WIDTH 		int(200 * IMAGE_SCALE)
 #define IMAGE_HEIGHT 		int(100 * IMAGE_SCALE)
+#define AA_PASSES			100
 
 #define TRACE_MAX_DEPTH		50
 
@@ -38,7 +40,7 @@ int main()
 	Camera camera;
 
 	elapsedSeconds();
-	raytracer.render(scene, camera);
+	raytracer.render(scene, camera, true, AA_PASSES);
 	float elapsed = elapsedSeconds();
 	printf("Done in %.2fms!\n", elapsed*1000);
 

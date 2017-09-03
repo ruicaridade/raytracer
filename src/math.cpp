@@ -24,6 +24,11 @@ Vector3 operator*(const Vector3& vector, float scalar)
     return Vector3(vector.x * scalar, vector.y * scalar, vector.z * scalar);
 }
 
+Vector3 operator/(const Vector3& vector, float scalar)
+{
+    return Vector3(vector.x / scalar, vector.y / scalar, vector.z / scalar); 
+}
+
 float length(const Vector3& vector)
 {
     return sqrt(vector.x * vector.x + 
