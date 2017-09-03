@@ -21,7 +21,23 @@ Color operator*(float scalar, const Color& color)
         (unsigned char)(color.a * scalar));
 }
 
-Color Color::fromUnitVector(const Vector3& vector)
+Color operator*(const Color& color, const Vector3& vector)
+{
+    return Color(color.r * vector.x,
+        color.g * vector.y,
+        color.b * vector.z,
+        color.a);
+}
+
+Color operator*(const Vector3& vector, const Color& color)
+{
+    return Color(color.r * vector.x,
+        color.g * vector.y,
+        color.b * vector.z,
+        color.a);
+}
+
+Color Color::fromVector(const Vector3& vector)
 {
     return Color(255.0f * vector.x,
         255.0f * vector.y,
@@ -29,7 +45,7 @@ Color Color::fromUnitVector(const Vector3& vector)
         255.0f);
 }
 
-Vector3 Color::toUnitVector() const
+Vector3 Color::vector() const
 {
     return Vector3(r / 255.0f, 
         g / 255.0f,

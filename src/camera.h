@@ -5,7 +5,7 @@ class Camera
 {
 public:
     Camera();
-    Ray cast(float x, float y);
+    Ray cast(float x, float y) const;
 
 private:
     Vector3 origin;
@@ -13,5 +13,3 @@ private:
     Vector3 horizontal;
     Vector3 vertical;
 };
-
-Ray camera_cast_ray(const Camera& camera, float x, float y);

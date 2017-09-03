@@ -9,7 +9,7 @@ class Material
 {
 public:
     virtual bool scatter(const Ray& ray, const Intersection& intersection,
-        Vector3 attenuation, Ray& scattered) const = 0;
+        Vector3& attenuation, Ray& scattered) const = 0;
 
     template <typename T, typename... TArgs>
     static void registerMaterial(const std::string& name, TArgs... args)

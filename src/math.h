@@ -21,6 +21,7 @@ class Ray
 {
 public:
     Ray(const Vector3& origin, const Vector3& direction);
+    Ray();
 
     Vector3 point(float distance) const;
 

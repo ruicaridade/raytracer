@@ -7,6 +7,8 @@ Vector3::Vector3(float x, float y, float z)
 Ray::Ray(const Vector3& origin, const Vector3& direction)
     : origin(origin), direction(direction) { }
 
+Ray::Ray() { }
+
 Vector3 operator+(const Vector3& v1, const Vector3& v2)
 {
     return Vector3(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z);

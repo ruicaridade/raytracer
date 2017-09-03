@@ -10,7 +10,7 @@ public:
     template <typename T, typename... TArgs>
     void add(TArgs... args);
 
-    void forEach(std::function<void(const std::unique_ptr<Traceable>&)> callback);
+    void forEach(std::function<void(const std::unique_ptr<Traceable>&)> callback) const;
 
 private:
     std::vector<std::unique_ptr<Traceable>> objects;
