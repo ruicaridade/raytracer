@@ -1,13 +1,10 @@
-#include "utilities.h"
-
-#include <stdio.h>
+#include "color.h"
 #include <iostream>
-#include <chrono>
 #include "external\TinyPngOut.h"
 
 Color::Color(unsigned char r, unsigned char g, unsigned char b, unsigned char a)
-    : r(r), g(g), b(b), a(a) { }
-        
+: r(r), g(g), b(b), a(a) { }
+
 Color operator*(const Color& color, float scalar)
 {
     return Color((unsigned char)(color.r * scalar),
@@ -24,7 +21,22 @@ Color operator*(float scalar, const Color& color)
         (unsigned char)(color.a * scalar));
 }
 
-void colors_to_png(const std::string& filename, const std::vector<std::vector<Color>>& data)
+Color Color::fromUnitVector(const Vector3& vector)
+{
+    return Color(255.0f * vector.x,
+        255.0f * vector.y,
+        255.0f * vector.z,
+        255.0f);
+}
+
+Vector3 Color::toUnitVector() const
+{
+    return Vector3(r / 255.0f, 
+        g / 255.0f,
+        b / 255.0f);
+}
+
+void Color::saveToPng(const std::string& filename, const std::vector<std::vector<Color>>& data)
 {
     if (data.size() == 0)
         return;
@@ -72,13 +84,4 @@ void colors_to_png(const std::string& filename, const std::vector<std::vector<Co
     }
 
     fclose(file);
-}
-
-float elapsed_seconds()
-{
-    static auto previous = std::chrono::high_resolution_clock::now();
-    auto now = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<float> elapsed = now - previous;
-    previous = now;
-    return elapsed.count();
 }

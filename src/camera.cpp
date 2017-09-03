@@ -8,7 +8,7 @@ Camera::Camera()
     horizontal = Vector3(4, 0, 0);
 }
 
-Ray camera_cast_ray(const Camera& camera, float x, float y)
+Ray Camera::cast(float x, float y)
 {
-    return Ray(camera.origin, camera.zero + camera.horizontal * x + camera.vertical * y - camera.origin);
+    return Ray(origin, zero + horizontal * x + vertical * y - origin);
 }

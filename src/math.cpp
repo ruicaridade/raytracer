@@ -1,5 +1,5 @@
 #include "math.h"
-#include <math.h>
+#include <cmath>
 
 Vector3::Vector3(float x, float y, float z)
     : x(x), y(y), z(z) { }
@@ -45,7 +45,7 @@ Vector3& normalize(Vector3& vector)
     return vector;
 }
 
-Vector3 ray_get_point(const Ray& ray, float t)
+Vector3 Ray::point(float distance) const
 {
-    return ray.origin + ray.direction * t;
+    return origin + direction * distance;
 }

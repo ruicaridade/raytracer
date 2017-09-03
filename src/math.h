@@ -17,12 +17,13 @@ float length(const Vector3& vector);
 float dot(const Vector3& a, const Vector3& b);
 Vector3& normalize(Vector3& vector);
 
-struct Ray
+class Ray
 {
+public:
     Ray(const Vector3& origin, const Vector3& direction);
+
+    Vector3 point(float distance) const;
 
     Vector3 origin;
     Vector3 direction;
 };
-
-Vector3 ray_get_point(const Ray& ray, float t);

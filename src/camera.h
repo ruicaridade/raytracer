@@ -1,10 +1,13 @@
 #pragma once
 #include "math.h"
 
-struct Camera
+class Camera
 {
+public:
     Camera();
+    Ray cast(float x, float y);
 
+private:
     Vector3 origin;
     Vector3 zero;
     Vector3 horizontal;

@@ -1,8 +1,13 @@
 #include <iostream>
 #include <random>
-#include "utilities.h"
-#include "geometry.h"
+#include <chrono>
+#include "scene.h"
 #include "camera.h"
+#include "color.h"
+#include "geometry\sphere.h"
+#include "math.h"
+
+#include "materials\diffuse.h"
 
 #define IMAGE_SCALE 		4
 #define IMAGE_WIDTH 		int(200 * IMAGE_SCALE)
@@ -13,7 +18,26 @@
 #define SHOW_PROGRESS 		0
 #define PROGRESS_INTERVAL	(IMAGE_WIDTH * IMAGE_HEIGHT * 0.05f)
 
-Vector3 random_in_unit_sphere()
+#define GAMMA				2.2f
+
+float elapsedSeconds()
+{
+	static auto previous = std::chrono::high_resolution_clock::now();
+    auto now = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<float> elapsed = now - previous;
+    previous = now;
+    return elapsed.count();
+}
+
+Color linearToGamma(const Color& color, float value)
+{
+	Vector3 c = color.toUnitVector();
+	float gamma = 1.0f / value;
+	Vector3 result = Vector3(pow(c.x, gamma), pow(c.y, gamma), pow(c.z, gamma));
+	return Color::fromUnitVector(result);
+}
+
+Vector3 randomInUnitSphere()
 {
 	static std::random_device device;
 	static std::mt19937 generator(device());
@@ -28,25 +52,25 @@ Vector3 random_in_unit_sphere()
 	return p;
 }
 
-Color trace(const std::vector<Sphere>& spheres, const Ray& ray, int depth)
+Color trace(Scene& scene, const Ray& ray, int depth)
 {
 	Intersection intersection;
-	for (size_t i = 0; i < spheres.size(); i++)
+	scene.forEach([&intersection, ray](const std::unique_ptr<Traceable>& traceable) 
 	{
-		Intersection temp = intersects(spheres[i], ray);
-		
+		Intersection temp;
+		traceable->intersects(ray, temp);
 		if (temp.distance < intersection.distance)
 		{
 			intersection = temp;
 		}
-	}
+	});
 
 	if (intersection.hit)
 	{
-		Vector3 target = intersection.point + intersection.normal + random_in_unit_sphere();
+		Vector3 target = intersection.point + intersection.normal + randomInUnitSphere();
 		Vector3 direction = target - intersection.point;
 		normalize(direction);
-		return 0.5f * trace(spheres, Ray(intersection.point, direction), depth+1);
+		return 0.5f * trace(scene, Ray(intersection.point, direction), depth+1);
 	}
 	else
 	{
@@ -58,18 +82,19 @@ Color trace(const std::vector<Sphere>& spheres, const Ray& ray, int depth)
 int main()
 {
 	std::vector<std::vector<Color>> output;
-	std::vector<Sphere> spheres
-	{
-		Sphere(Vector3(0.5f, 0, -1.5), 0.65f),
-		Sphere(Vector3(-0.5f, 0, -1), 0.65f),
-		Sphere(Vector3(0, -100.5f, -1), 100)
-	};
 	
 	printf("Resolution: %i, %i\n", IMAGE_WIDTH, IMAGE_HEIGHT);
 	printf("Drawing scene...\n");
 	
+	Material::registerMaterial<Diffuse>("diffuse");
+
+	Scene scene;
+	scene.add<Sphere>(Vector3(0.5f, 0, -1.5), 0.65f, "diffuse");
+	scene.add<Sphere>(Vector3(-0.5f, 0, -1), 0.65f, "diffuse");
+	scene.add<Sphere>(Vector3(0, -100.5f, -1), 100, "diffuse");
+
 	Camera camera;
-	elapsed_seconds();
+	elapsedSeconds();
 	for (int y = IMAGE_HEIGHT - 1; y >= 0; y--)
 	{
 		std::vector<Color> row;
@@ -78,16 +103,19 @@ int main()
 			float xx = (float)x / IMAGE_WIDTH;
 			float yy = (float)y / IMAGE_HEIGHT;
 
-			row.push_back(trace(spheres, camera_cast_ray(camera, xx, yy), 0));
+			row.push_back(linearToGamma(trace(scene, camera.cast(xx, yy), 0), GAMMA));
 		}
 
 		output.push_back(row);
 	}
 
-	float elapsed = elapsed_seconds();
+	float elapsed = elapsedSeconds();
+	printf("Done in %.2fms!\n", elapsed*1000);
 
 	printf("Writing to image file...\n");
-	colors_to_png("output.png", output);
+	elapsedSeconds();
+	Color::saveToPng("output.png", output);
+	elapsed = elapsedSeconds();
 
 	printf("Done in %.2fms!\n", elapsed*1000);
 	return 0;
