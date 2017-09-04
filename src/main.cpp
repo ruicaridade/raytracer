@@ -5,16 +5,16 @@
 #include "materials\diffuse.h"
 #include "materials\metal.h"
 
-#define IMAGE_SCALE 		4
+#define IMAGE_SCALE 		2
 #define IMAGE_WIDTH 		int(200 * IMAGE_SCALE)
 #define IMAGE_HEIGHT 		int(100 * IMAGE_SCALE)
-#define AA_PASSES			100
+#define AA_PASSES			15
 
 #define TRACE_MAX_DEPTH		50
 
 #define PROGRESS_INTERVAL	(IMAGE_WIDTH * IMAGE_HEIGHT * 0.05f)
 
-float elapsedSeconds()
+float elapsedSeconds()	
 {
 	static auto previous = std::chrono::high_resolution_clock::now();
     auto now = std::chrono::high_resolution_clock::now();
@@ -31,11 +31,13 @@ int main()
 	Raytracer raytracer(IMAGE_WIDTH, IMAGE_HEIGHT, TRACE_MAX_DEPTH);
 
 	Material::registerMaterial<Diffuse>("diffuse", Vector3(0.5f, 0.8f, 0.25f));
+	Material::registerMaterial<Metal>("metal", Vector3(0.8f, 0.8f, 0.8f), 0.3f);
 
 	Scene scene;
-	scene.add<Sphere>(Vector3(0.5f, 0, -1.5), 0.65f, "diffuse");
-	scene.add<Sphere>(Vector3(-0.5f, 0, -1), 0.65f, "diffuse");
-	scene.add<Sphere>(Vector3(0, -100.5f, -1), 100, "diffuse");
+	scene.add<Sphere>(Vector3(0, 0, -1), 0.4f, "diffuse");
+	scene.add<Sphere>(Vector3(0, -100.5f, -1), 100, "metal");
+	scene.add<Sphere>(Vector3(1, 0, -1), 0.4f, "metal");
+	scene.add<Sphere>(Vector3(-1, 0, -1), 0.4f, "diffuse");
 
 	Camera camera;
 

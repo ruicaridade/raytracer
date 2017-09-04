@@ -10,6 +10,8 @@ public:
     template <typename T, typename... TArgs>
     void add(TArgs... args);
 
+    bool intersects(const Ray& ray, float min, float max, Intersection& intersection) const;
+
     void forEach(std::function<void(const std::unique_ptr<Traceable>&)> callback) const;
 
 private:

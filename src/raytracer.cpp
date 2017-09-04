@@ -1,16 +1,15 @@
 #include "raytracer.h"
 #include <cmath>
+#include <limits>
 #include "utilities\random.h"
 
 Raytracer::Raytracer(int width, int height, int depth, float gamma)
     : width(width), height(height), maxDepth(depth), gamma(gamma) {}
 
-static Color linearToGamma(const Color &color, float value)
+static Vector3 linearToGamma(const Vector3 &color, float value)
 {
-    Vector3 c = color.vector();
     float gamma = 1.0f / value;
-    Vector3 result = Vector3(pow(c.x, gamma), pow(c.y, gamma), pow(c.z, gamma));
-    return Color::fromVector(result);
+    return Vector3(pow(color.x, gamma), pow(color.y, gamma), pow(color.z, gamma));
 }
 
 void Raytracer::render(const Scene &scene, const Camera &camera, bool antialiasing, int passes)
@@ -18,7 +17,7 @@ void Raytracer::render(const Scene &scene, const Camera &camera, bool antialiasi
     output.clear();
     for (int y = height - 1; y >= 0; y--)
     {
-        std::vector<Color> row;
+        std::vector<Vector3> row;
         for (int x = 0; x < width; x++)
         {
             if (antialiasing)
@@ -28,11 +27,11 @@ void Raytracer::render(const Scene &scene, const Camera &camera, bool antialiasi
                 {
                     float xx = float(x + Random::random()) / float(width);
                     float yy = float(y + Random::random()) / float(height);
-                    color = color + trace(scene, camera.cast(xx, yy), 0).vector(); 
+                    color = color + trace(scene, camera.cast(xx, yy), 0);
                 }
                 
                 color = color / passes;
-                row.push_back(linearToGamma(Color::fromVector(color), gamma));
+                row.push_back(linearToGamma(color, gamma));
             }
             else
             {
@@ -47,41 +46,31 @@ void Raytracer::render(const Scene &scene, const Camera &camera, bool antialiasi
     }
 }
 
-Color Raytracer::trace(const Scene &scene, const Ray &ray, int depth)
+Vector3 Raytracer::trace(const Scene &scene, const Ray &ray, int depth)
 {
     Intersection intersection;
-    scene.forEach([&intersection, ray](const std::unique_ptr<Traceable> &traceable) {
-        Intersection temp;
-        traceable->intersects(ray, temp);
-        if (temp.distance < intersection.distance)
-        {
-            intersection = temp;
-        }
-    });
-
-    if (intersection.hit)
+    if (scene.intersects(ray, 0.001f, std::numeric_limits<float>::max(), intersection))
     {
         auto material = intersection.object->getMaterial();
         Vector3 attenuation;
-        Ray scatteredRay;
+        Ray scattered;
 
-        if (depth < maxDepth && material->scatter(ray, intersection, attenuation, scatteredRay))
+        if (depth < maxDepth && material->scatter(ray, intersection, attenuation, scattered))
         {
-            return attenuation * trace(scene, scatteredRay, depth + 1);
+            return attenuation * trace(scene, scattered, depth + 1);
         }
-        else
-        {
-            return Color(0, 0, 0, 0);
-        }
+
+        return Vector3(0, 0, 0);
     }
     else
     {
-        float t = 0.5f * (ray.direction.y + 1);
-        return Color((1 - t) * 255 + t * 128, (1 - t) * 255 + t * 179, (1 - t) * 255 + t * 255, 255);
+        Vector3 direction = normalize(ray.direction);
+        float t = 0.5f * (direction.y + 1.0f);
+        return (1.0f - t) * Vector3(1, 1, 1) + t * Vector3(0.5f, 0.7f, 1);
     }
 }
 
 void Raytracer::saveAsImageFile(const std::string& filename)
 {
-    Color::saveToPng(filename, output);
+    Vector3::saveToPng(filename, output);
 }

@@ -1,4 +1,6 @@
 #pragma once
+#include <string>
+#include <vector>
 
 struct Vector3
 {
@@ -7,16 +9,20 @@ struct Vector3
     float x;
     float y;
     float z;
+
+    static void saveToPng(const std::string& filename, const std::vector<std::vector<Vector3>>& data);
 };
 
 Vector3 operator+(const Vector3& v1, const Vector3& v2);
 Vector3 operator-(const Vector3& v1, const Vector3& v2);
+Vector3 operator*(const Vector3& v1, const Vector3& v2);
 Vector3 operator*(const Vector3& vector, float scalar);
+Vector3 operator*(float scalar, const Vector3& vector);
 Vector3 operator/(const Vector3& vector, float scalar);
 
 float length(const Vector3& vector);
 float dot(const Vector3& a, const Vector3& b);
-Vector3& normalize(Vector3& vector);
+Vector3 normalize(const Vector3& vector);
 
 class Ray
 {

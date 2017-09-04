@@ -7,8 +7,9 @@ Sphere::Sphere(const Vector3& center, float radius, const std::string& materialN
     Traceable::setMaterial(materialName);
 }
 
-bool Sphere::intersects(const Ray &ray, Intersection &intersection) const
+bool Sphere::intersects(const Ray &ray, float min, float max, Intersection &intersection) const
 {
+    intersection.hit = false;
     Vector3 oc = ray.origin - center;
     float a = dot(ray.direction, ray.direction);
     float b = dot(oc, ray.direction);
@@ -23,15 +24,11 @@ bool Sphere::intersects(const Ray &ray, Intersection &intersection) const
         if (t0 > t1)
             t0 = t1;
 
-        if (t0 > 0)
+        if (t0 > min && t0 < max)
         {
             intersection.distance = t0;
             intersection.point = ray.point(t0);
-
-            Vector3 dir = intersection.point - center;
-            normalize(dir);
-            intersection.normal = dir;
-
+            intersection.normal = (intersection.point - center) / radius;
             intersection.object = this;
             intersection.hit = true;
             return true;

@@ -1,7 +1,6 @@
 #pragma once
 #include <vector>
 #include <string>
-#include "color.h"
 #include "scene.h"
 #include "camera.h"
 #include "math.h"
@@ -15,10 +14,10 @@ public:
     void saveAsImageFile(const std::string& filename);
 
 private:
-    Color trace(const Scene& scene, const Ray& ray, int depth);
+    Vector3 trace(const Scene& scene, const Ray& ray, int depth);
     
     int width, height;
     int maxDepth;
     float gamma;
-    std::vector<std::vector<Color>> output;
+    std::vector<std::vector<Vector3>> output;
 };
