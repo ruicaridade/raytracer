@@ -8,7 +8,7 @@
 #define IMAGE_SCALE 		2
 #define IMAGE_WIDTH 		int(200 * IMAGE_SCALE)
 #define IMAGE_HEIGHT 		int(100 * IMAGE_SCALE)
-#define AA_PASSES			15
+#define AA_PASSES			100
 
 #define TRACE_MAX_DEPTH		50
 
@@ -36,7 +36,7 @@ int main()
 	Scene scene;
 	scene.add<Sphere>(Vector3(0, 0, -1), 0.4f, "diffuse");
 	scene.add<Sphere>(Vector3(0, -100.5f, -1), 100, "metal");
-	scene.add<Sphere>(Vector3(1, 0, -1), 0.4f, "metal");
+	scene.add<Sphere>(Vector3(1, 0, -1), 0.4f, "diffuse");
 	scene.add<Sphere>(Vector3(-1, 0, -1), 0.4f, "diffuse");
 
 	Camera camera;
