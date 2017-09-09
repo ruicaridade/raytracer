@@ -1,5 +1,5 @@
-width       = 800
-height      = 600
-depth       = 200
-aa_passes   = 200
+width       = 400
+height      = 200
+depth       = 50
+aa_passes   = 15
 threads     = 4

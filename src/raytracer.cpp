@@ -18,73 +18,68 @@ static Vector3 linearToGamma(const Vector3 &color, float value)
     return Vector3(pow(color.x, gamma), pow(color.y, gamma), pow(color.z, gamma));
 }
 
-Raytracer::Row Raytracer::renderRow(const Scene &scene, const Camera &camera, int passes, int y)
+Raytracer::RenderResult Raytracer::render(const Scene &scene, const Camera &camera, int passes, int index, int minY, int maxY)
 {
-    Row row;
-    row.index = y;
-    for (int x = 0; x < width; x++)
+    RenderResult result;
+    result.index = index;
+
+    for (int y = maxY - 1; y >= minY; y--)
     {
+        std::vector<Vector3> colors;
+
         Vector3 color;
-        for (size_t i = 0; i < passes; i++)
+        for (size_t x = 0; x < width; x++)
         {
-            float xx = float(x + Random::random()) / float(width);
-            float yy = float(y + Random::random()) / float(height);
-            color = color + trace(scene, camera.cast(xx, yy), 0);
+            for (size_t i = 0; i < passes; i++)
+            {
+                float xx = float(x + Random::random()) / float(width);
+                float yy = float(y + Random::random()) / float(height);
+                color = color + trace(scene, camera.cast(xx, yy), 0);
+            }
+
+            color = color / (float)passes;
+            colors.push_back(linearToGamma(color, gamma));
         }
 
-        color = color / (float)passes;
-        row.colors.push_back(linearToGamma(color, gamma));
+        result.colors.push_back(colors);
     }
 
-    return row;
+    return result;
 }
 
-void Raytracer::render(const Scene &scene, const Camera &camera, int passes, int threads)
+void Raytracer::render(const Scene &scene, const Camera &camera, int passes, int maxThreads)
 {
     output.clear();
 
-    int y = height - 1;
-    int threadCount = 0;
-    std::vector<std::future<Row>> futures;
-    std::vector<Row> rows;
+    int linesPerThread = height / maxThreads;
 
-    while (y >= 0)
+    std::vector<std::future<RenderResult>> futures;
+    std::vector<RenderResult> results;
+
+    for (size_t i = 0; i < maxThreads; i++)
     {
-        if (threadCount < threads)
-        {
-            futures.push_back(std::async(std::launch::async, [&] {
-                return renderRow(scene, camera, passes, y);
-            }));
+        int minY = i * linesPerThread;
+        int maxY = minY + linesPerThread;
 
-            threadCount++;
-            y--;
+        auto future = std::async(std::launch::async, [this, &scene, &camera, &passes, &i, minY, maxY] {
+            return render(scene, camera, passes, i, minY, maxY);
+        });
 
-            if (y % 5 == 0)
-            {
-                std::cout << (float(height - y) / width) * 100 << "%" << std::endl;
-            }
-        }
-
-        for (int i = futures.size() - 1; i >= 0; i--)
-        {
-            std::future<Row>& future = futures[i];
-            if (future.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
-            {
-                rows.push_back(future.get());
-                futures.erase(futures.begin() + i);
-                threadCount--;
-            }
-        }
+        futures.push_back(std::move(future));
     }
 
-    std::sort(rows.begin(), rows.end(), [](const Row& left, const Row& right)
+    for (int i = futures.size() - 1; i >= 0; i--)
     {
-        return left.index > right.index;
-    });
+        results.push_back(futures[i].get());
+    }
 
-    for (size_t i = 0; i < rows.size(); i++)
+    for (size_t i = 0; i < results.size(); i++)
     {
-        output.push_back(rows[i].colors);
+        auto &result = results[i];
+        for (size_t j = 0; j < result.colors.size(); j++)
+        {
+            output.push_back(result.colors[j]);
+        }
     }
 }
 
