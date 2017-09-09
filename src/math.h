@@ -1,28 +1,8 @@
 #pragma once
-#include <string>
-#include <vector>
+#include <glm\vec3.hpp>
+#include <glm\glm.hpp>
 
-struct Vector3
-{
-    Vector3(float x = 0, float y = 0, float z = 0);
-
-    float x;
-    float y;
-    float z;
-
-    static void saveToPng(const std::string& filename, const std::vector<std::vector<Vector3>>& data);
-};
-
-Vector3 operator+(const Vector3& v1, const Vector3& v2);
-Vector3 operator-(const Vector3& v1, const Vector3& v2);
-Vector3 operator*(const Vector3& v1, const Vector3& v2);
-Vector3 operator*(const Vector3& vector, float scalar);
-Vector3 operator*(float scalar, const Vector3& vector);
-Vector3 operator/(const Vector3& vector, float scalar);
-
-float length(const Vector3& vector);
-float dot(const Vector3& a, const Vector3& b);
-Vector3 normalize(const Vector3& vector);
+typedef glm::vec3 Vector3;
 
 class Ray
 {

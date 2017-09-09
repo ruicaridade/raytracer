@@ -43,16 +43,17 @@ int main()
 	Raytracer raytracer(width, height, depth);
 
 	Material::registerMaterial<Diffuse>("diffuse", Vector3(0.5f, 0.8f, 0.25f));
-	Material::registerMaterial<Metal>("metal", Vector3(0.8f, 0.8f, 0.8f), 0.3f);
+	Material::registerMaterial<Metal>("metal", Vector3(0.7f, 0.5f, 0.8f), 0.3f);
+	Material::registerMaterial<Metal>("ground", Vector3(1, 1, 1), 0.8f);
 
 	Scene scene;
 	scene.ambient = Vector3(0.5f, 0.5f, 0.5f);
 	scene.addLight<Light>(Vector3(1, 1, -1), Vector3(0.5f, 0.5f, 0.5f));
 
-	scene.add<Sphere>(Vector3(0, 0, -2), 1, "metal");
-	// scene.add<Sphere>(Vector3(0, -100.5f, -1), 100, "metal");
-	// scene.add<Sphere>(Vector3(1, 10, -1), 0.4f, "diffuse");
-	// scene.add<Sphere>(Vector3(-1, 10, -1), 0.4f, "diffuse");
+	scene.add<Sphere>(Vector3(0, 0, -1), 0.4f, "metal");
+	scene.add<Sphere>(Vector3(0, -100.5f, -1), 100, "ground");
+	scene.add<Sphere>(Vector3(1, 0, -1), 0.4f, "diffuse");
+	scene.add<Sphere>(Vector3(-1, 0, -1), 0.4f, "diffuse");
 
 	Camera camera;
 

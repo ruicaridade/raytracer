@@ -9,7 +9,7 @@ bool Diffuse::scatter(const Ray& ray, const Intersection& intersection,
 {
     Vector3 target = intersection.point + intersection.normal + Random::randomInUnitSphere();
     Vector3 direction = target - intersection.point;
-    scattered = Ray(intersection.point, normalize(direction));
+    scattered = Ray(intersection.point, glm::normalize(direction));
     attenuation = albedo;
     return true;
 }

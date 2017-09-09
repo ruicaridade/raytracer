@@ -1,12 +1,13 @@
 #include "light.h"
 #include <algorithm>
+#include <glm\glm.hpp>
 
 Light::Light(const Vector3& direction, const Vector3& color)
-    : direction(normalize(direction)), color(color) { }
+    : direction(glm::normalize(direction)), color(color) { }
 
 Vector3 Light::process(const Ray& ray, const Intersection& intersection)
 {
-	float diff = std::max(dot(normalize(intersection.normal), direction), 0.0f);
+	float diff = std::max(glm::dot(glm::normalize(intersection.normal), direction), 0.0f);
 	return diff * Vector3(1, 1, 1) * color;
 }
 

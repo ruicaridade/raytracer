@@ -7,15 +7,14 @@
 
 class Raytracer
 {
-public:
-    // TODO: Resolution will be decided by the Camera.
+  public:
     Raytracer(int width, int height, int depth, float gamma = 2.2f);
-    void render(const Scene& scene, const Camera& camera, bool antialiasing, int passes = 100);
-    void saveAsImageFile(const std::string& filename);
+    void render(const Scene &scene, const Camera &camera, bool antialiasing, int passes = 100);
+    void saveAsImageFile(const std::string &filename) const;
 
-private:
-    Vector3 trace(const Scene& scene, const Ray& ray, int depth);
-    
+  private:
+    Vector3 trace(const Scene &scene, const Ray &ray, int depth) const;
+
     int width, height;
     int maxDepth;
     float gamma;

@@ -1,6 +1,9 @@
 #include "raytracer.h"
 #include <cmath>
 #include <limits>
+#include <iostream>
+#include <glm\glm.hpp>
+#include "external\TinyPngOut.h"
 #include "utilities\random.h"
 
 Raytracer::Raytracer(int width, int height, int depth, float gamma)
@@ -29,15 +32,15 @@ void Raytracer::render(const Scene &scene, const Camera &camera, bool antialiasi
                     float yy = float(y + Random::random()) / float(height);
                     color = color + trace(scene, camera.cast(xx, yy), 0);
                 }
-                
-                color = color / passes;
+
+                color = color / (float)passes;
                 row.push_back(linearToGamma(color, gamma));
             }
             else
             {
                 float xx = (float)x / width;
                 float yy = (float)y / height;
-    
+
                 row.push_back(linearToGamma(trace(scene, camera.cast(xx, yy), 0), gamma));
             }
         }
@@ -46,7 +49,7 @@ void Raytracer::render(const Scene &scene, const Camera &camera, bool antialiasi
     }
 }
 
-Vector3 Raytracer::trace(const Scene &scene, const Ray &ray, int depth)
+Vector3 Raytracer::trace(const Scene &scene, const Ray &ray, int depth) const
 {
     Intersection intersection;
     if (scene.intersects(ray, 0.0001f, std::numeric_limits<float>::max(), intersection))
@@ -57,17 +60,6 @@ Vector3 Raytracer::trace(const Scene &scene, const Ray &ray, int depth)
 
         if (depth < maxDepth && material->scatter(ray, intersection, attenuation, scattered))
         {
-            // Vector3 lightOutput;
-            // scene.forEach([&lightOutput, scene, ray, intersection](const std::unique_ptr<Light>& light)
-            // {
-            //     Intersection lightIntersection;
-            //     if (!scene.intersects(Ray(intersection.point, light->getDirection()), 
-            //         0.001f, std::numeric_limits<float>::max(), lightIntersection))
-            //     {
-            //         lightOutput = lightOutput + light->process(ray, intersection);
-            //     }
-            // });
-            // return lightOutput + scene.ambient * attenuation * trace(scene, scattered, depth + 1);
             return attenuation * trace(scene, scattered, depth + 1);
         }
 
@@ -75,13 +67,60 @@ Vector3 Raytracer::trace(const Scene &scene, const Ray &ray, int depth)
     }
     else
     {
-        Vector3 direction = normalize(ray.direction);
+        Vector3 direction = glm::normalize(ray.direction);
         float t = 0.5f * (direction.y + 1.0f);
         return (1.0f - t) * Vector3(1, 1, 1) + t * Vector3(0.5f, 0.7f, 1);
     }
 }
 
-void Raytracer::saveAsImageFile(const std::string& filename)
+void Raytracer::saveAsImageFile(const std::string &filename) const
 {
-    Vector3::saveToPng(filename, output);
+    if (output.size() == 0)
+        return;
+
+    unsigned int height = output.size();
+    unsigned int width = output[0].size();
+
+    std::vector<uint8_t> image;
+
+    for (size_t j = 0; j < height; j++)
+    {
+        for (size_t i = 0; i < width; i++)
+        {
+            image.push_back((uint8_t)(glm::clamp(output[j][i].x, 0.0f, 1.0f) * 255));
+            image.push_back((uint8_t)(glm::clamp(output[j][i].y, 0.0f, 1.0f) * 255));
+            image.push_back((uint8_t)(glm::clamp(output[j][i].z, 0.0f, 1.0f) * 255));
+        }
+    }
+
+    FILE *file = fopen(filename.c_str(), "wb");
+
+    if (file == nullptr)
+    {
+        std::cout << "Couldn't open file stream " << filename << std::endl;
+        return;
+    }
+
+    struct TinyPngOut png;
+
+    if (TinyPngOut_init(&png, file, width, height) != TINYPNGOUT_OK)
+    {
+        fclose(file);
+        std::cout << "Couldn't load png file " << filename << std::endl;
+        return;
+    }
+
+    if (TinyPngOut_write(&png, image.data(), width * height) != TINYPNGOUT_OK)
+    {
+        fclose(file);
+        std::cout << "Couldn't write to png file " << filename << std::endl;
+        return;
+    }
+
+    if (TinyPngOut_write(&png, nullptr, 0) != TINYPNGOUT_DONE)
+    {
+        std::cout << "File might be corrupted " << filename << std::endl;
+    }
+
+    fclose(file);
 }

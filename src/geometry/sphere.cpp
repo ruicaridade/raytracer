@@ -1,9 +1,9 @@
 #include "sphere.h"
 #include <cmath>
 
-Sphere::Sphere(const Vector3& center, float radius, const std::string& materialName)
-    : center(center), radius(radius), radius2(radius * radius) 
-{ 
+Sphere::Sphere(const Vector3 &center, float radius, const std::string &materialName)
+    : center(center), radius(radius), radius2(radius * radius)
+{
     Traceable::setMaterial(materialName);
 }
 
@@ -18,7 +18,8 @@ bool Sphere::intersects(const Ray &ray, float min, float max, Intersection &inte
 
     if (descriminant > 0)
     {
-        float t = (-b - sqrt(descriminant)) / a;
+        float sqrtd = sqrt(descriminant);
+        float t = (-b - sqrtd) / a;
         if (t > min && t < max)
         {
             intersection.distance = t;
@@ -28,8 +29,8 @@ bool Sphere::intersects(const Ray &ray, float min, float max, Intersection &inte
             intersection.hit = true;
             return true;
         }
-        
-        t = (-b + sqrt(descriminant)) / a;
+
+        t = (-b + sqrtd) / a;
         if (t > min && t < max)
         {
             intersection.distance = t;
