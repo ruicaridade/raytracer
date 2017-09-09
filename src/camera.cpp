@@ -10,5 +10,5 @@ Camera::Camera()
 
 Ray Camera::cast(float x, float y) const
 {
-    return Ray(origin, normalize(zero + horizontal * x + vertical * y - origin));
+    return Ray(origin, zero + horizontal * x + vertical * y - origin);
 }

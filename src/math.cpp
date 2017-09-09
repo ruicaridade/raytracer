@@ -3,6 +3,17 @@
 #include <iostream>
 #include "external\TinyPngOut.h"
 
+static float clamp(float v, float min, float max)
+{
+    float temp = v;
+    if (temp < min)
+        temp = min;
+    else if (temp > max)
+        temp = max;
+
+    return temp;
+}
+
 Vector3::Vector3(float x, float y, float z)
     : x(x), y(y), z(z) { }
 
@@ -80,9 +91,9 @@ void Vector3::saveToPng(const std::string& filename, const std::vector<std::vect
     {
         for (size_t i = 0; i < width; i++)
         {
-            image.push_back((uint8_t)(data[j][i].x * 255));
-            image.push_back((uint8_t)(data[j][i].y * 255));
-            image.push_back((uint8_t)(data[j][i].z * 255));
+            image.push_back((uint8_t)(clamp(data[j][i].x, 0.0f, 1.0f) * 255));
+            image.push_back((uint8_t)(clamp(data[j][i].y, 0.0f, 1.0f) * 255));
+            image.push_back((uint8_t)(clamp(data[j][i].z, 0.0f, 1.0f) * 255));
         }
     }
 

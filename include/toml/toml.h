@@ -222,7 +222,7 @@ ParseResult parse(std::istream&);
 // Windows does not have timegm but have _mkgmtime.
 inline time_t timegm(std::tm* timeptr)
 {
-    return _mkgmtime(timeptr);
+    return timegm(timeptr);
 }
 
 // On Windows, Visual Studio does not define gmtime_r. However, mingw might

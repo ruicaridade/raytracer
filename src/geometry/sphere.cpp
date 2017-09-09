@@ -18,16 +18,22 @@ bool Sphere::intersects(const Ray &ray, float min, float max, Intersection &inte
 
     if (descriminant > 0)
     {
-        float t0 = (-b - sqrt(descriminant)) / a;
-        float t1 = (-b + sqrt(descriminant)) / a;
-
-        if (t0 > t1)
-            t0 = t1;
-
-        if (t0 > min && t0 < max)
+        float t = (-b - sqrt(descriminant)) / a;
+        if (t > min && t < max)
         {
-            intersection.distance = t0;
-            intersection.point = ray.point(t0);
+            intersection.distance = t;
+            intersection.point = ray.point(t);
+            intersection.normal = (intersection.point - center) / radius;
+            intersection.object = this;
+            intersection.hit = true;
+            return true;
+        }
+        
+        t = (-b + sqrt(descriminant)) / a;
+        if (t > min && t < max)
+        {
+            intersection.distance = t;
+            intersection.point = ray.point(t);
             intersection.normal = (intersection.point - center) / radius;
             intersection.object = this;
             intersection.hit = true;

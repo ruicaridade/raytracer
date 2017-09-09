@@ -49,7 +49,7 @@ void Raytracer::render(const Scene &scene, const Camera &camera, bool antialiasi
 Vector3 Raytracer::trace(const Scene &scene, const Ray &ray, int depth)
 {
     Intersection intersection;
-    if (scene.intersects(ray, 0.001f, std::numeric_limits<float>::max(), intersection))
+    if (scene.intersects(ray, 0.0001f, std::numeric_limits<float>::max(), intersection))
     {
         auto material = intersection.object->getMaterial();
         Vector3 attenuation;
@@ -57,6 +57,17 @@ Vector3 Raytracer::trace(const Scene &scene, const Ray &ray, int depth)
 
         if (depth < maxDepth && material->scatter(ray, intersection, attenuation, scattered))
         {
+            // Vector3 lightOutput;
+            // scene.forEach([&lightOutput, scene, ray, intersection](const std::unique_ptr<Light>& light)
+            // {
+            //     Intersection lightIntersection;
+            //     if (!scene.intersects(Ray(intersection.point, light->getDirection()), 
+            //         0.001f, std::numeric_limits<float>::max(), lightIntersection))
+            //     {
+            //         lightOutput = lightOutput + light->process(ray, intersection);
+            //     }
+            // });
+            // return lightOutput + scene.ambient * attenuation * trace(scene, scattered, depth + 1);
             return attenuation * trace(scene, scattered, depth + 1);
         }
 

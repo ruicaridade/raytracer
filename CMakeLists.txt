@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.0)
 # Define compiler
 set(CMAKE_C_COMPILER gcc)
 set(CMAKE_CXX_COMPILER g++)
+set(CMAKE_CXX_STANDARD 17)
 
 # Compiler flags
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-libgcc -static-libstdc++ -fdiagnostics-color")
