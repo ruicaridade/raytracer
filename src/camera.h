@@ -4,7 +4,7 @@
 class Camera
 {
 public:
-    Camera();
+    Camera(Vector3 position, Vector3 up, Vector3 lookAt, float aspectRatio, float fov);
     Ray cast(float x, float y) const;
 
 private:
