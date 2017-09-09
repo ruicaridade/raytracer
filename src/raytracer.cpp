@@ -58,6 +58,11 @@ void Raytracer::render(const Scene &scene, const Camera &camera, int passes, int
 
             threadCount++;
             y--;
+
+            if (y % 5 == 0)
+            {
+                std::cout << (float(height - y) / width) * 100 << "%" << std::endl;
+            }
         }
 
         for (int i = futures.size() - 1; i >= 0; i--)

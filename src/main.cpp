@@ -6,6 +6,7 @@
 #include "geometry\sphere.h"
 #include "materials\diffuse.h"
 #include "materials\metal.h"
+#include "materials\refractive.h"
 
 float elapsedSeconds()	
 {
@@ -47,6 +48,7 @@ int main()
 	Material::registerMaterial<Metal>("metal_orange", Vector3(0.8f, 0.7f, 0.5f), 0.4f);
 	Material::registerMaterial<Metal>("metal_cold", Vector3(0.8f, 0.8f, 0.8f), 0.1f);
 	Material::registerMaterial<Metal>("ground", Vector3(1, 1, 1), 0.5f);
+	Material::registerMaterial<Refractive>("glass", 1.5f);
 
 	Scene scene;
 	scene.ambient = Vector3(0.5f, 0.5f, 0.5f);
@@ -57,9 +59,9 @@ int main()
 	scene.add<Sphere>(Vector3(0.5f, 0, -1), 0.4f, "diffuse");
 	scene.add<Sphere>(Vector3(-0.5f, 0, -1), 0.4f, "metal_cold");
 	scene.add<Sphere>(Vector3(0.5f, 0, 0), 0.4f, "metal_orange");
-	scene.add<Sphere>(Vector3(-0.5f, 0, 0), 0.4f, "metal_orange");
+	scene.add<Sphere>(Vector3(-0.5f, 0, 0), 0.4f, "glass");
 
-	Camera camera(Vector3(-1.5f, 1.5f, 1), Vector3(0, 1, 0), Vector3(0, 0, -0.5f), float(width) / float(height), 45.0f);
+	Camera camera(Vector3(-1.5f, 1, 1), Vector3(0, 1, 0), Vector3(0, 0, -0.5f), float(width) / float(height), 45.0f);
 
 	elapsedSeconds();
 	raytracer.render(scene, camera, antiAliasingPasses, threadCount);
