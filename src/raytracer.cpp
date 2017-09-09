@@ -3,6 +3,13 @@
 #include <limits>
 #include <iostream>
 #include <glm\glm.hpp>
+
+#if defined(WIN32)
+#include <mingw/mingw.thread.h>
+#else
+#include <thread>
+#endif
+
 #include "external\TinyPngOut.h"
 #include "utilities\random.h"
 
@@ -17,6 +24,7 @@ static Vector3 linearToGamma(const Vector3 &color, float value)
 
 void Raytracer::render(const Scene &scene, const Camera &camera, bool antialiasing, int passes)
 {
+    std::thread t;
     output.clear();
     for (int y = height - 1; y >= 0; y--)
     {

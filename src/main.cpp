@@ -7,8 +7,6 @@
 #include "materials\diffuse.h"
 #include "materials\metal.h"
 
-#include <thread>
-
 float elapsedSeconds()	
 {
 	static auto previous = std::chrono::high_resolution_clock::now();
@@ -20,8 +18,6 @@ float elapsedSeconds()
 
 int main()
 {
-	std::thread t;
-
 	printf("Parsing config... ");
 	std::ifstream file("config.toml");
 	toml::ParseResult parseResult = toml::parse(file);
