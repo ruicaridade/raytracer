@@ -52,12 +52,14 @@ int main()
 	scene.ambient = Vector3(0.5f, 0.5f, 0.5f);
 	scene.addLight<Light>(Vector3(1, 1, -1), Vector3(0.5f, 0.5f, 0.5f));
 
-	scene.add<Sphere>(Vector3(0, 0, -1), 0.4f, "diffuse");
 	scene.add<Sphere>(Vector3(0, -100.5f, -1), 100, "ground");
-	scene.add<Sphere>(Vector3(1, 0, -1), 0.4f, "metal_orange");
-	scene.add<Sphere>(Vector3(-1, 0, -1), 0.4f, "metal_cold");
 
-	Camera camera(Vector3(-1.5f, 1.5f, 1), Vector3(0, 1, 0), Vector3(0, 0, -1), float(width) / float(height), 45.0f);
+	scene.add<Sphere>(Vector3(0.5f, 0, -1), 0.4f, "diffuse");
+	scene.add<Sphere>(Vector3(-0.5f, 0, -1), 0.4f, "metal_cold");
+	scene.add<Sphere>(Vector3(0.5f, 0, 0), 0.4f, "metal_orange");
+	scene.add<Sphere>(Vector3(-0.5f, 0, 0), 0.4f, "metal_orange");
+
+	Camera camera(Vector3(-1.5f, 1.5f, 1), Vector3(0, 1, 0), Vector3(0, 0, -0.5f), float(width) / float(height), 45.0f);
 
 	elapsedSeconds();
 	raytracer.render(scene, camera, antiAliasingPasses, threadCount);

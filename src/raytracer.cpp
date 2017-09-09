@@ -5,6 +5,7 @@
 #include <glm\glm.hpp>
 #include <thread>
 #include <future>
+#include <algorithm>
 #include "external\TinyPngOut.h"
 #include "utilities\random.h"
 
@@ -45,6 +46,7 @@ void Raytracer::render(const Scene &scene, const Camera &camera, int passes, int
     int y = height - 1;
     int threadCount = 0;
     std::vector<std::future<Row>> futures;
+    std::vector<Row> rows;
 
     while (y >= 0)
     {
@@ -63,11 +65,21 @@ void Raytracer::render(const Scene &scene, const Camera &camera, int passes, int
             std::future<Row>& future = futures[i];
             if (future.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
             {
-                output.push_back(future.get().colors);
+                rows.push_back(future.get());
                 futures.erase(futures.begin() + i);
                 threadCount--;
             }
         }
+    }
+
+    std::sort(rows.begin(), rows.end(), [](const Row& left, const Row& right)
+    {
+        return left.index > right.index;
+    });
+
+    for (size_t i = 0; i < rows.size(); i++)
+    {
+        output.push_back(rows[i].colors);
     }
 }
 
