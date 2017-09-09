@@ -2,3 +2,4 @@ width       = 400
 height      = 200
 depth       = 50
 aa_passes   = 15
+threads     = 4

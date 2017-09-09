@@ -32,6 +32,7 @@ int main()
 	int height = value.get<int>("height");
 	int depth = value.get<int>("depth");
 	int antiAliasingPasses = value.get<int>("aa_passes");
+	int threadCount = value.get<int>("threads");
 
 	printf("Done!\n");
 
@@ -59,7 +60,7 @@ int main()
 	Camera camera(Vector3(-1.5f, 1.5f, 1), Vector3(0, 1, 0), Vector3(0, 0, -1), float(width) / float(height), 45.0f);
 
 	elapsedSeconds();
-	raytracer.render(scene, camera, true, antiAliasingPasses);
+	raytracer.render(scene, camera, antiAliasingPasses, threadCount);
 	float elapsed = elapsedSeconds();
 	printf("Done in %.2fms!\n", elapsed*1000);
 

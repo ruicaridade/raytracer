@@ -3,13 +3,8 @@
 #include <limits>
 #include <iostream>
 #include <glm\glm.hpp>
-
-#if defined(WIN32)
-#include <mingw/mingw.thread.h>
-#else
 #include <thread>
-#endif
-
+#include <future>
 #include "external\TinyPngOut.h"
 #include "utilities\random.h"
 
@@ -22,38 +17,57 @@ static Vector3 linearToGamma(const Vector3 &color, float value)
     return Vector3(pow(color.x, gamma), pow(color.y, gamma), pow(color.z, gamma));
 }
 
-void Raytracer::render(const Scene &scene, const Camera &camera, bool antialiasing, int passes)
+Raytracer::Row Raytracer::renderRow(const Scene &scene, const Camera &camera, int passes, int y)
 {
-    std::thread t;
-    output.clear();
-    for (int y = height - 1; y >= 0; y--)
+    Row row;
+    row.index = y;
+    for (int x = 0; x < width; x++)
     {
-        std::vector<Vector3> row;
-        for (int x = 0; x < width; x++)
+        Vector3 color;
+        for (size_t i = 0; i < passes; i++)
         {
-            if (antialiasing)
-            {
-                Vector3 color;
-                for (size_t i = 0; i < passes; i++)
-                {
-                    float xx = float(x + Random::random()) / float(width);
-                    float yy = float(y + Random::random()) / float(height);
-                    color = color + trace(scene, camera.cast(xx, yy), 0);
-                }
-
-                color = color / (float)passes;
-                row.push_back(linearToGamma(color, gamma));
-            }
-            else
-            {
-                float xx = (float)x / width;
-                float yy = (float)y / height;
-
-                row.push_back(linearToGamma(trace(scene, camera.cast(xx, yy), 0), gamma));
-            }
+            float xx = float(x + Random::random()) / float(width);
+            float yy = float(y + Random::random()) / float(height);
+            color = color + trace(scene, camera.cast(xx, yy), 0);
         }
 
-        output.push_back(row);
+        color = color / (float)passes;
+        row.colors.push_back(linearToGamma(color, gamma));
+    }
+
+    return row;
+}
+
+void Raytracer::render(const Scene &scene, const Camera &camera, int passes, int threads)
+{
+    output.clear();
+
+    int y = height - 1;
+    int threadCount = 0;
+    std::vector<std::future<Row>> futures;
+
+    while (y >= 0)
+    {
+        if (threadCount < threads)
+        {
+            futures.push_back(std::async(std::launch::async, [&] {
+                return renderRow(scene, camera, passes, y);
+            }));
+
+            threadCount++;
+            y--;
+        }
+
+        for (int i = futures.size() - 1; i >= 0; i--)
+        {
+            std::future<Row>& future = futures[i];
+            if (future.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
+            {
+                output.push_back(future.get().colors);
+                futures.erase(futures.begin() + i);
+                threadCount--;
+            }
+        }
     }
 }
 
