@@ -90,20 +90,19 @@ Vector3 Raytracer::trace(const Scene &scene, const Ray &ray, int depth) const
     {
         auto material = intersection.object->getMaterial();
         Vector3 attenuation;
+        Vector3 emitted = material->emit(0, 0, intersection.point);
         Ray scattered;
 
         if (depth < maxDepth && material->scatter(ray, intersection, attenuation, scattered))
         {
-            return attenuation * trace(scene, scattered, depth + 1);
+            return emitted + attenuation * trace(scene, scattered, depth + 1);
         }
 
-        return Vector3(0, 0, 0);
+        return emitted;
     }
     else
     {
-        Vector3 direction = glm::normalize(ray.direction);
-        float t = 0.5f * (direction.y + 1.0f);
-        return (1.0f - t) * Vector3(1, 1, 1) + t * Vector3(0.5f, 0.7f, 1);
+        return scene.ambient;
     }
 }
 

@@ -11,6 +11,8 @@ public:
     virtual bool scatter(const Ray& ray, const Intersection& intersection,
         Vector3& attenuation, Ray& scattered) const = 0;
 
+    virtual Vector3 emit(float u, float v, const Vector3& point) const;
+
     template <typename T, typename... TArgs>
     static void create(const std::string &name, TArgs... args)
     {

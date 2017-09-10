@@ -28,11 +28,3 @@ void Scene::forEach(std::function<void(const std::unique_ptr<Traceable>&)> callb
         callback(objects[i]);
     }
 }
-
-void Scene::forEach(std::function<void(const std::unique_ptr<Light>&)> callback) const
-{
-    for (size_t i = 0; i < lights.size(); i++)
-    {
-        callback(lights[i]);
-    }
-}

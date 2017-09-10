@@ -4,9 +4,11 @@
 #include <toml/toml.h>
 #include "raytracer.h"
 #include "geometry\sphere.h"
+#include "geometry\rectangle.h"
 #include "materials\diffuse.h"
 #include "materials\metal.h"
 #include "materials\refractive.h"
+#include "materials\emissive.h"
 #include "utilities\random.h"
 #include "textures\checker_texture.h"
 
@@ -49,6 +51,8 @@ int main()
 	Raytracer raytracer(width, height, depth);
 
 	Material::create<Diffuse>("green", Vector3(0.5f, 0.8f, 0.25f), nullptr);
+	Material::create<Diffuse>("checker", Vector3(0.75f, 0.75f, 0.75f), 
+		std::make_shared<CheckerTexture>(Vector3(0.35f, 0.35f, 0.35f), Vector3(0.5f, 0.5f, 0.5f)));
 	
 	Material::create<Metal>("ground", Vector3(1, 1, 1), 0.2f,
 		std::make_shared<CheckerTexture>(Vector3(0.35f, 0.35f, 0.35f), Vector3(0.5f, 0.5f, 0.5f)));
@@ -57,11 +61,14 @@ int main()
 	
 	Material::create<Refractive>("glass", 1.5f);
 
+	Material::create<Emissive>("light", Vector3(1, 1, 1), 7.0f);
+
 	Scene scene;
 	scene.ambient = Vector3(0.5f, 0.5f, 0.5f);
-	scene.addLight<Light>(Vector3(1, 1, -1), Vector3(0.5f, 0.5f, 0.5f));
 
-	scene.add<Sphere>(Vector3(0, -100.5f, -1), 100, "ground");
+	scene.add<Sphere>(Vector3(0, -100.5f, -1), 100, "checker");
+	scene.add<Sphere>(Vector3(10, 10, 0), 3.0f, "light");
+	scene.add<Sphere>(Vector3(0, 10, 0), 1.0f, "light");
 
 	scene.add<Sphere>(Vector3(-0.5f, 0, 0), 0.4f, "green");
 	scene.add<Sphere>(Vector3(0.5f, 0, -1), 0.4f, "chrome");
