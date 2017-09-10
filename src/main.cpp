@@ -7,6 +7,7 @@
 #include "materials\diffuse.h"
 #include "materials\metal.h"
 #include "materials\refractive.h"
+#include "utilities\random.h"
 
 float elapsedSeconds()	
 {
@@ -19,6 +20,8 @@ float elapsedSeconds()
 
 int main()
 {
+	Random::reseed();
+
 	printf("Parsing config... ");
 	std::ifstream file("config.toml");
 	toml::ParseResult parseResult = toml::parse(file);
