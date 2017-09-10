@@ -6,11 +6,14 @@ Refractive::Refractive(float refraction)
 
 static bool refract(const Vector3& I, const Vector3& N, float niOverNt, Vector3& refracted)
 {
-    float dt = glm::dot(glm::normalize(I), N);
+    Vector3 ui = glm::normalize(I);
+    Vector3 un = glm::normalize(N);
+
+    float dt = glm::dot(ui, un);
     float discriminant = 1.0f - niOverNt * niOverNt * (1 - dt * dt);
     if (discriminant > 0)
     {
-        refracted = niOverNt * (I - N * dt) - N * glm::sqrt(discriminant);
+        refracted = niOverNt * (ui - N * dt) - N * glm::sqrt(discriminant);
         return true;
     }
 
@@ -19,9 +22,9 @@ static bool refract(const Vector3& I, const Vector3& N, float niOverNt, Vector3&
 
 static float polyApprox(float cosine, float refraction)
 {
-    float r = (1 - refraction) / (1 + refraction);
+    float r = (1.0f - refraction) / (1.0f + refraction);
     r = r * r;
-    return r + (1 - r) * glm::pow(1 - cosine, 5);
+    return r + (1.0f - r) * glm::pow(1.0f - cosine, 5);
 }
 
 bool Refractive::scatter(const Ray &ray, const Intersection &intersection, Vector3 &attenuation, Ray &scattered) const
@@ -37,13 +40,14 @@ bool Refractive::scatter(const Ray &ray, const Intersection &intersection, Vecto
     {
         outwardNormal = -intersection.normal;
         niOverNt = refraction;
-        cosine = refraction * glm::dot(ray.direction, intersection.normal) / glm::length(ray.direction);
+        cosine = glm::dot(ray.direction, intersection.normal) / glm::length(ray.direction);
+        cosine = glm::sqrt(1.0f - refraction * refraction * (1.0f - cosine * cosine));
     }
     else
     {
         outwardNormal = intersection.normal;
         niOverNt = 1.0f / refraction;
-        cosine = -dot(ray.direction, intersection.normal) / glm::length(ray.direction);
+        cosine = -glm::dot(ray.direction, intersection.normal) / glm::length(ray.direction);
     }
 
     Vector3 refracted;
@@ -56,7 +60,6 @@ bool Refractive::scatter(const Ray &ray, const Intersection &intersection, Vecto
     else
     {
         scattered = Ray(intersection.point, reflected);
-        prob = 1.0f;
         return true;
     }
 

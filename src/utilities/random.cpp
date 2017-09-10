@@ -10,7 +10,7 @@ bool Random::reseed()
 
 float Random::random()
 {
-	return -1 + (float)(rand()) / ((float)(RAND_MAX / (1 - (-1))));
+	return float(rand()) / float(RAND_MAX);
 }
 
 Vector3 Random::randomInUnitSphere()
