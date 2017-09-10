@@ -4,4 +4,4 @@
 
 # Milestone
 
-![](https://github.com/ruicaridade/tracer/blob/master/milestones/milestone_2.png)
+![](https://github.com/ruicaridade/tracer/blob/master/milestones/latest.png)
