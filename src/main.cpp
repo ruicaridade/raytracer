@@ -8,6 +8,7 @@
 #include "materials\metal.h"
 #include "materials\refractive.h"
 #include "utilities\random.h"
+#include "textures\checker_texture.h"
 
 float elapsedSeconds()	
 {
@@ -47,10 +48,13 @@ int main()
 
 	Raytracer raytracer(width, height, depth);
 
-	Material::registerMaterial<Diffuse>("diffuse", Vector3(0.5f, 0.8f, 0.25f));
-	Material::registerMaterial<Metal>("metal_orange", Vector3(0.8f, 0.7f, 0.5f), 0.4f);
-	Material::registerMaterial<Metal>("metal_cold", Vector3(0.8f, 0.8f, 0.8f), 0.1f);
-	Material::registerMaterial<Metal>("ground", Vector3(1, 1, 1), 0.5f);
+	Material::registerMaterial<Diffuse>("green", Vector3(0.5f, 0.8f, 0.25f), nullptr);
+	
+	Material::registerMaterial<Metal>("ground", Vector3(1, 1, 1), 0.2f,
+		std::make_shared<CheckerTexture>(Vector3(0.35f, 0.35f, 0.35f), Vector3(0.5f, 0.5f, 0.5f)));
+	Material::registerMaterial<Metal>("gold", Vector3(0.8f, 0.7f, 0.5f), 0.4f, nullptr);
+	Material::registerMaterial<Metal>("chrome", Vector3(0.8f, 0.8f, 0.8f), 0.1f, nullptr);
+	
 	Material::registerMaterial<Refractive>("glass", 1.5f);
 
 	Scene scene;
@@ -59,9 +63,9 @@ int main()
 
 	scene.add<Sphere>(Vector3(0, -100.5f, -1), 100, "ground");
 
-	scene.add<Sphere>(Vector3(0.5f, 0, -1), 0.4f, "diffuse");
-	scene.add<Sphere>(Vector3(-0.5f, 0, -1), 0.4f, "metal_cold");
-	scene.add<Sphere>(Vector3(0.5f, 0, 0), 0.4f, "metal_orange");
+	scene.add<Sphere>(Vector3(0.5f, 0, -1), 0.4f, "green");
+	scene.add<Sphere>(Vector3(-0.5f, 0, -1), 0.4f, "chrome");
+	scene.add<Sphere>(Vector3(0.5f, 0, 0), 0.4f, "gold");
 	scene.add<Sphere>(Vector3(-0.5f, 0, 0), 0.4f, "glass");
 
 	Camera camera(Vector3(-1.5f, 1, 1), Vector3(0, 1, 0), Vector3(0, 0, -0.5f), float(width) / float(height), 45.0f);
